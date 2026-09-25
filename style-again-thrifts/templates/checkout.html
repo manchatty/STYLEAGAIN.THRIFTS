@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page checkout"><div>
+<p class="eyebrow">FINAL STEP</p><h1>Checkout</h1>
+<form method="post" class="form">
+<label>Delivery address<textarea name="address" rows="4" required></textarea></label>
+<label>Phone number<input name="phone" required></label>
+<div class="payment-box">
+<div><p class="eyebrow">PAYMENT</p><h3>Scan & pay with UPI</h3>
+<p>Scan the QR code with your UPI app and complete the payment before placing the order.</p></div>
+<img src="{{ url_for('static', filename='payment_qr.jpeg') }}" alt="UPI payment QR code" class="payment-qr">
+<div class="payment-note">UPI PAYMENT • KEEP YOUR PAYMENT CONFIRMATION</div>
+</div>
+<button class="button dark full">Place order — ₹{{ "%.0f"|format(total) }}</button>
+</form></div>
+<aside class="summary"><p class="eyebrow">ORDER SUMMARY</p>
+{% for x in items %}<div class="summary-line"><span>{{ x.product['name'] }} × {{ x.quantity }}</span><b>₹{{ "%.0f"|format(x.product['price']*x.quantity) }}</b></div>{% endfor %}
+<hr><div class="summary-line total"><span>Total</span><b>₹{{ "%.0f"|format(total) }}</b></div></aside>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+<a class="back" href="{{ url_for('admin_dashboard') }}">← Back to dashboard</a>
+<p class="eyebrow">ORDER #{{ order['id'] }}</p><h1>Order details</h1>
+<div class="detail-grid">
+<div class="detail-card"><h3>Customer</h3><p>{{ order['customer_name'] }}<br>{{ order['customer_email'] }}<br>{{ order['phone'] }}</p></div>
+<div class="detail-card"><h3>Delivery address</h3><p>{{ order['address'] }}</p></div>
+<div class="detail-card"><h3>Status</h3><p><span class="status">{{ order['status'] }}</span></p></div>
+</div>
+<div class="order-items">
+{% for i in items %}<div><span>{{ i['product_name'] }} × {{ i['quantity'] }}</span><b>₹{{ "%.0f"|format(i['price']*i['quantity']) }}</b></div>{% endfor %}
+<hr><div><strong>Total</strong><strong>₹{{ "%.0f"|format(order['total']) }}</strong></div>
+</div>
+</section>
+{% endblock %}

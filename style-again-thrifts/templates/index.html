@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">CURATED SECOND-HAND / LIMITED PIECES</p>
+    <h1>WEAR IT.<br><em>REPEAT IT.</em></h1>
+    <p class="hero-copy">Streetwear and vintage finds, handpicked for people who don't dress like everyone else.</p>
+    <a class="button dark" href="#shop">Explore drops ↓</a>
+  </div>
+  <div class="hero-card">
+    <span>DROP 001</span>
+    <strong>NEW<br>FINDS</strong>
+    <small>LIMITED STOCK</small>
+  </div>
+</section>
+
+<section id="shop" class="shop-head">
+  <div><p class="eyebrow">THE CURRENT DROP</p><h2>Latest pieces</h2></div>
+  <span>{{ products|length }} pieces</span>
+</section>
+<section class="grid">
+{% for p in products %}
+<article class="product-card">
+  <div class="image-wrap">
+    {% if p['image_url'] %}<img src="{{ p['image_url'] }}" alt="{{ p['name'] }}">{% else %}<div class="no-image">STYLE AGAIN THRIFTS</div>{% endif %}
+    {% if p['stock'] <= 0 %}<span class="sold">SOLD OUT</span>{% endif %}
+  </div>
+  <div class="product-info">
+    <div><h3>{{ p['name'] }}</h3><p>{{ p['description'] }}</p></div>
+    <div class="price">₹{{ "%.0f"|format(p['price']) }}</div>
+  </div>
+  <div class="product-bottom">
+    <span>{{ p['stock'] }} left</span>
+    {% if p['stock'] > 0 %}
+    <form method="post" action="{{ url_for('add_to_cart', product_id=p['id']) }}"><button class="button small">Add to bag</button></form>
+    {% else %}<button class="button small disabled" disabled>Sold out</button>{% endif %}
+  </div>
+</article>
+{% else %}<p>No products yet.</p>{% endfor %}
+</section>
+{% endblock %}

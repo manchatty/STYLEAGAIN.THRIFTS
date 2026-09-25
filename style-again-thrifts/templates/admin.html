@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="orderToast" class="order-toast"><div class="toast-icon">✓</div><div><b>NEW ORDER REQUEST</b><span id="toastText">A customer just placed an order.</span></div><button onclick="hideOrderToast()">×</button></div>
+<section class="admin-page">
+<div class="admin-top"><div><p class="eyebrow">STORE CONTROL</p><h1>Admin dashboard</h1><p class="admin-note">New orders stay <b>Pending Approval</b> until you approve them.</p></div><a class="button dark" href="{{ url_for('new_product') }}">+ Add product</a></div>
+<div class="stats">
+<div><span>Products</span><b>{{ stats.products }}</b></div><div><span>Orders</span><b>{{ stats.orders }}</b></div><div><span>Customers</span><b>{{ stats.customers }}</b></div><div><span>Total sales</span><b>₹{{ "%.0f"|format(stats.sales) }}</b></div>
+</div>
+<h2>Products</h2>
+<div class="admin-table">
+<div class="table-head"><span>Product</span><span>Price</span><span>Stock</span><span>Actions</span></div>
+{% for p in products %}<div class="table-row"><span><b>{{ p['name'] }}</b><small>{{ p['description'] }}</small></span><span>₹{{ "%.0f"|format(p['price']) }}</span><span>{{ p['stock'] }}</span><span class="actions"><a href="{{ url_for('edit_product', product_id=p['id']) }}">Edit</a><form method="post" action="{{ url_for('delete_product', product_id=p['id']) }}" onsubmit="return confirm('Delete this product?')"><button>Delete</button></form></span></div>{% endfor %}
+</div>
+<h2>Customer orders</h2>
+<div class="admin-table">
+<div class="table-head"><span>Order</span><span>Customer</span><span>Total</span><span>Admin action</span></div>
+{% for o in orders %}
+<div class="table-row order-row {% if o['status']=='Pending Approval' %}pending-row{% endif %}">
+<span><a href="{{ url_for('order_details', order_id=o['id']) }}"><b>#{{ o['id'] }}</b></a><small>{{ o['created_at'] }}</small></span>
+<span>{{ o['customer_name'] }}<small>{{ o['customer_email'] }}</small></span>
+<span>₹{{ "%.0f"|format(o['total']) }}<small class="status">{{ o['status'] }}</small></span>
+<span>
+<form method="post" action="{{ url_for('update_order_status', order_id=o['id']) }}" class="status-form">
+<select name="status" aria-label="Order status">
+{% for s in ['Pending Approval','Approved','Rejected','Packed','Shipped','Delivered','Cancelled'] %}<option {{ 'selected' if s==o['status'] else '' }}>{{ s }}</option>{% endfor %}
+</select>
+<button class="approve-button" type="submit">Update</button>
+</form>
+</span>
+</div>
+{% else %}<p>No orders yet.</p>{% endfor %}
+</div>
+</section>
+<script>
+let lastOrderId = Number("{{ latest_order_id }}");
+const toast = document.getElementById("orderToast");
+const toastText = document.getElementById("toastText");
+function showOrderToast(order){
+  toastText.textContent = `${order.customer_name} placed order #${order.id} — ₹${Math.round(order.total)}`;
+  toast.classList.add("show");
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(hideOrderToast, 8000);
+}
+function hideOrderToast(){ toast.classList.remove("show"); }
+async function checkNewOrders(){
+  try{
+    const res = await fetch(`{{ url_for("admin_new_orders") }}?after=${lastOrderId}`, {cache:"no-store"});
+    if(!res.ok) return;
+    const data = await res.json();
+    for(const order of data.orders){
+      lastOrderId = Math.max(lastOrderId, Number(order.id));
+      showOrderToast(order);
+    }
+    if(data.orders.length) setTimeout(()=>location.reload(), 8500);
+  }catch(e){}
+}
+setInterval(checkNewOrders, 3000);
+</script>
+{% endblock %}

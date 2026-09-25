@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="success-page">
+  <div class="success-box">
+    <span class="check">✓</span>
+    <p class="eyebrow">ORDER REQUEST SENT</p>
+    <h1>Successfully ordered!</h1>
+    <p>Your order <strong>#{{ order_id }}</strong> has been sent to <strong>STYLE AGAIN THRIFTS</strong>.</p>
+    <p class="success-sub">The store admin will review and approve your order. You can track the status from My Orders.</p>
+    <div class="success-actions">
+      <a class="button dark" href="{{ url_for('my_orders') }}">Track my order</a>
+      <a class="button" href="{{ url_for('index') }}">Continue shopping</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

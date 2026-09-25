@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-page"><div class="auth-box wide">
+<p class="eyebrow">STORE INVENTORY</p>
+<h1>{{ "Edit product" if product else "Add product" }}</h1>
+<form method="post" enctype="multipart/form-data" class="form">
+<label>Product name<input name="name" required value="{{ product['name'] if product else '' }}"></label>
+<label>Description<textarea name="description" rows="3">{{ product['description'] if product else '' }}</textarea></label>
+<div class="two">
+<label>Price (₹)<input type="number" name="price" min="0" step="1" required value="{{ product['price'] if product else '' }}"></label>
+<label>Stock<input type="number" name="stock" min="0" required value="{{ product['stock'] if product else 1 }}"></label>
+</div>
+<div class="upload-box" id="dropZone">
+<input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+<div class="upload-icon">＋</div>
+<strong>Drag & drop product image here</strong>
+<span>or click to browse · JPG, PNG, WEBP</span>
+<img id="preview" class="upload-preview" alt="Preview" {% if product and product['image_url'] %}src="{{ product['image_url'] }}"{% endif %}>
+</div>
+<details class="url-fallback"><summary>Use image URL instead</summary>
+<input name="image_url" value="{{ product['image_url'] if product else '' }}" placeholder="https://..."></details>
+<button class="button dark full">{{ "Save changes" if product else "Create product" }}</button>
+</form></div></section>
+<script>
+const zone=document.getElementById('dropZone'), input=document.getElementById('image'), preview=document.getElementById('preview');
+zone.onclick=()=>input.click();
+['dragenter','dragover'].forEach(e=>zone.addEventListener(e,x=>{x.preventDefault();zone.classList.add('dragging')}));
+['dragleave','drop'].forEach(e=>zone.addEventListener(e,x=>{x.preventDefault();zone.classList.remove('dragging')}));
+zone.addEventListener('drop',x=>{if(x.dataTransfer.files.length){input.files=x.dataTransfer.files;show(x.dataTransfer.files[0])}});
+input.onchange=()=>{if(input.files.length)show(input.files[0])};
+function show(f){if(f.type.startsWith('image/')){preview.src=URL.createObjectURL(f);preview.style.display='block'}}
+</script>
+{% endblock %}

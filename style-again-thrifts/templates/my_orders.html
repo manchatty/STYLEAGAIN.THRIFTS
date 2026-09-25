@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page"><p class="eyebrow">ACCOUNT</p><h1>My orders</h1>
+<div class="orders">
+{% for o in orders %}
+<div class="order-card"><div><b>#{{ o['id'] }}</b><span>{{ o['created_at'] }}</span></div><strong>₹{{ "%.0f"|format(o['total']) }}</strong><span class="status">{{ o['status'] }}</span></div>
+{% else %}<div class="empty"><p>No orders yet.</p><a class="button dark" href="{{ url_for('index') }}">Shop now</a></div>{% endfor %}
+</div></section>
+{% endblock %}

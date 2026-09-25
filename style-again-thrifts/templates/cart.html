@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+<p class="eyebrow">YOUR BAG</p><h1>Cart</h1>
+{% if items %}
+<form method="post" action="{{ url_for('update_cart') }}">
+<div class="cart-list">
+{% for x in items %}
+<div class="cart-row">
+  <img src="{{ x.product['image_url'] }}" alt="">
+  <div><h3>{{ x.product['name'] }}</h3><p>₹{{ "%.0f"|format(x.product['price']) }} each</p></div>
+  <input class="qty" type="number" min="0" max="{{ x.product['stock'] }}" name="qty_{{ x.product['id'] }}" value="{{ x.quantity }}">
+  <strong>₹{{ "%.0f"|format(x.product['price'] * x.quantity) }}</strong>
+</div>
+{% endfor %}
+</div>
+<div class="cart-total"><span>Total</span><strong>₹{{ "%.0f"|format(total) }}</strong></div>
+<button class="button">Update cart</button>
+<a class="button dark" href="{{ url_for('checkout') }}">Checkout →</a>
+</form>
+{% else %}
+<div class="empty"><h2>Your bag is empty.</h2><a class="button dark" href="{{ url_for('index') }}">Shop the drop</a></div>
+{% endif %}
+</section>
+{% endblock %}
